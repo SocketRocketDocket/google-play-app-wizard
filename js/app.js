@@ -323,7 +323,52 @@
     });
   }
 
+  function isPro() {
+    return !!(window.PLAY_BILLING && window.PLAY_BILLING.isPro());
+  }
+
+  function updateProUi() {
+    const unlocked = isPro();
+    const btn = $('proBtn');
+    if (btn) {
+      btn.classList.toggle('pro-active', unlocked);
+      btn.innerHTML = unlocked ? '⭐ <span>Pro Launch Kit Active</span>' : '⭐ <span>Unlock Pro Launch Kit</span>';
+    }
+    const priceEl = $('proPriceTag');
+    if (priceEl && window.PLAY_BILLING) priceEl.textContent = window.PLAY_BILLING.getPrice();
+
+    const lockTags = document.querySelectorAll('[data-pro-lock]');
+    lockTags.forEach(el => { el.hidden = unlocked; });
+  }
+
+  function openProModal(reason) {
+    const unlocked = isPro();
+    const isNative = !!(window.PLAY_BILLING && window.PLAY_BILLING.isNative());
+    const price = window.PLAY_BILLING ? window.PLAY_BILLING.getPrice() : '$4.99';
+
+    $('proPriceTag').textContent = price;
+    $('proReason').textContent = reason || '';
+    $('proReason').hidden = !reason;
+    $('proUnlockedBanner').hidden = !unlocked;
+    $('proPurchaseBtn').hidden = unlocked || !isNative;
+    $('proPurchaseBtn').textContent = `Unlock Pro Launch Kit — ${price}`;
+    $('proRestoreBtn').hidden = unlocked || !isNative;
+
+    const webBox = $('proWebDemoBox');
+    webBox.hidden = isNative;
+    if (!isNative) {
+      $('proWebToggleBtn').textContent = unlocked ? 'Switch back to Free tier (Preview)' : '✨ Enable Pro Preview (Web Demo)';
+    }
+
+    openModal('proModal');
+  }
+
   function createProjectFromModal() {
+    if (!isPro() && store.projects.length >= 1) {
+      closeModal('projectModal');
+      openProModal('Free includes 1 app project. Unlock Pro Launch Kit for unlimited apps & JSON backups.');
+      return;
+    }
     const inp = $('newProjectName');
     const name = inp.value.trim();
     if (!name) { inp.focus(); return; }
@@ -477,13 +522,17 @@
     // Quick launch shortcuts for built-in interactive tools
     const tb = $('toolsBanner');
     if (tb) {
+      const proTag = isPro() ? '' : ' <span class="mini-pro">PRO</span>';
       tb.innerHTML = `
         <div class="tools-banner-title">🧰 Built-in Launch Workbench Tools</div>
         <div class="tools-shortcuts">
           <button type="button" class="tool-shortcut" data-jump="store-listing.app-details">✍️ Store Listing Drafter</button>
-          <button type="button" class="tool-shortcut" data-jump="store-listing.app-icon">🖼️ Icon & Graphic Checker</button>
+          <button type="button" class="tool-shortcut" data-jump="store-listing.app-icon">🖼️ Asset Validator</button>
           <button type="button" class="tool-shortcut" data-jump="app-content.data-safety">🧩 SDK → Data Safety</button>
           <button type="button" class="tool-shortcut" data-jump="testing.closed-testing">⏱️ 14-Day Test Tracker</button>
+          <button type="button" class="tool-shortcut pro-shortcut" data-jump="store-listing.screenshots">📸 Screenshot Studio${proTag}</button>
+          <button type="button" class="tool-shortcut pro-shortcut" data-jump="store-listing.feature-graphic">🎨 Feature Graphic${proTag}</button>
+          <button type="button" class="tool-shortcut pro-shortcut" data-jump="app-content.privacy-policy">📜 Privacy Policy Gen${proTag}</button>
         </div>`;
       tb.querySelectorAll('[data-jump]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -604,6 +653,10 @@
   function makeToolContext() {
     return {
       getAppName: () => proj().name,
+      getProfile: () => proj().profile,
+      isPro,
+      openProModal,
+      saveFile: saveOrShareFile,
       getToolData: key => {
         const t = proj().tools;
         return t[key] ? Object.assign({}, t[key]) : {};
@@ -701,10 +754,16 @@
         </div>
       </div>`;
 
-    // Mount interactive tool if this step has one
+    // Mount interactive tool(s) if this step has any (free + Pro)
+    const toolSlot = card.querySelector('.step-tool-slot');
+    const toolCtx = makeToolContext();
     if (window.WIZARD_TOOLS) {
-      const toolEl = window.WIZARD_TOOLS.renderStepTool(section.id, step.id, makeToolContext());
-      if (toolEl) card.querySelector('.step-tool-slot').appendChild(toolEl);
+      const toolEl = window.WIZARD_TOOLS.renderStepTool(section.id, step.id, toolCtx);
+      if (toolEl) toolSlot.appendChild(toolEl);
+    }
+    if (window.WIZARD_PRO) {
+      const proEl = window.WIZARD_PRO.renderProStepTool(section.id, step.id, toolCtx);
+      if (proEl) toolSlot.appendChild(proEl);
     }
 
     // Expand / collapse
@@ -966,12 +1025,14 @@
   }
 
   function exportMarkdown() {
+    if (!isPro()) { openProModal('Markdown & PDF exports are part of Pro Launch Kit.'); return; }
     const fname = `google-play-${slugify(proj().name)}-${new Date().toISOString().slice(0, 10)}.md`;
     saveOrShareFile(fname, buildMarkdown(), 'text/markdown;charset=utf-8', `${proj().name} — Google Play Checklist`);
   }
 
   // ─── Backup & Restore (JSON) ───────────────────────────────────────
   function exportJson() {
+    if (!isPro()) { closeModal('projectModal'); openProModal('JSON Backup & Restore is part of Pro Launch Kit.'); return; }
     const payload = JSON.stringify({ exportedAt: new Date().toISOString(), app: 'google-play-app-wizard', data: store }, null, 2);
     const fname = `play-wizard-backup-${new Date().toISOString().slice(0, 10)}.json`;
     saveOrShareFile(fname, payload, 'application/json;charset=utf-8', 'Play Wizard Backup');
@@ -1052,6 +1113,7 @@
   }
 
   function exportPdf() {
+    if (!isPro()) { openProModal('Markdown & PDF exports are part of Pro Launch Kit.'); return; }
     $('printReport').innerHTML = buildPrintReport();
     document.body.classList.add('printing-report');
     const cleanup = () => {
@@ -1138,11 +1200,53 @@
 
     // Backup / Restore JSON
     $('exportJsonBtn').addEventListener('click', exportJson);
-    $('importJsonBtn').addEventListener('click', () => $('importJsonInput').click());
+    $('importJsonBtn').addEventListener('click', () => {
+      if (!isPro()) { closeModal('projectModal'); openProModal('JSON Backup & Restore is part of Pro Launch Kit.'); return; }
+      $('importJsonInput').click();
+    });
     $('importJsonInput').addEventListener('change', e => {
       importJsonFile(e.target.files && e.target.files[0]);
       e.target.value = '';
     });
+
+    // Pro Launch Kit & Play Billing
+    $('proBtn').addEventListener('click', () => { closeMobileSidebar(); openProModal(); });
+    $('proModalClose').addEventListener('click', () => closeModal('proModal'));
+    $('proPurchaseBtn').addEventListener('click', async () => {
+      const btn = $('proPurchaseBtn');
+      btn.disabled = true;
+      const res = await window.PLAY_BILLING.purchase();
+      btn.disabled = false;
+      if (res.ok) {
+        closeModal('proModal');
+        updateProUi();
+        rerender();
+        toast('🎉 Pro Launch Kit unlocked! Thank you!');
+      } else if (res.message) {
+        toast(res.message);
+      }
+    });
+    $('proRestoreBtn').addEventListener('click', async () => {
+      const res = await window.PLAY_BILLING.restore();
+      updateProUi();
+      rerender();
+      if (res.ok) closeModal('proModal');
+      if (res.message) toast(res.message);
+    });
+    $('proWebToggleBtn').addEventListener('click', () => {
+      const next = !isPro();
+      window.PLAY_BILLING.setWebPreview(next);
+      closeModal('proModal');
+      updateProUi();
+      rerender();
+      toast(next ? '✨ Pro Launch Kit preview enabled' : 'Switched back to Free tier');
+    });
+
+    if (window.PLAY_BILLING) {
+      window.PLAY_BILLING.onChange(() => { updateProUi(); rerender(); });
+      window.PLAY_BILLING.init();
+    }
+    updateProUi();
 
     // Global Search
     $('searchInput').addEventListener('input', e => runSearch(e.target.value));

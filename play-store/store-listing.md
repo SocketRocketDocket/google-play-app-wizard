@@ -45,12 +45,14 @@ Ready-to-paste fields for **Play Publish: App Wizard** (`io.github.socketrocketd
   • SDK → Data Safety Cheat Sheet — select common SDKs (Firebase, AdMob, Play Billing, Stripe, etc.) to preview likely Data Safety declarations
   • 14-Day Closed Test Tracker — track your 12+ opted-in testers and countdown to production eligibility for personal developer accounts
 
-  MULTI-APP & PRIVACY-FIRST
-  • Manage separate checklists for multiple Android apps
-  • Jot private notes on every step
-  • Search across all steps, tips, and notes, or filter by Remaining / Required
-  • Export your progress to Markdown, PDF, or JSON backup
-  • Works completely offline with Light & Dark mode — all data stays on your device
+  PRO LAUNCH KIT (OPTIONAL ONE-TIME UNLOCK)
+  • Play Store Screenshot Studio — frame raw captures with headlines, themes & Android bezel and export exact 1080×1920 PNGs
+  • Feature Graphic Generator — design opaque 1024×500 Play Store banners with safe-zone guides
+  • Privacy Policy & Account-Deletion HTML Generator — auto-built from your quiz answers & SDKs, ready for GitHub Pages
+  • Unlimited App Projects, JSON Backup/Restore, and Markdown/PDF report exports
+
+  PRIVACY-FIRST & OFFLINE-READY
+  • Works completely offline with Light & Dark mode — all notes & drafts stay on your device
   ```
 - **Graphics (in `play-store/`):**
   - App icon (`512×512` PNG): `play-store/app-icon-512x512.png`
@@ -64,19 +66,28 @@ Ready-to-paste fields for **Play Publish: App Wizard** (`io.github.socketrocketd
 
 ---
 
-## 3. App Content & Compliance (v1.0)
-> **Important:** Your declarations must match the binary you actually upload. Since v1.0 has no ad SDK or Play Billing SDK integrated yet, declare **No ads** and **No data collected** for v1.0 — then update those two forms when you ship an update that adds AdMob or IAP.
-
+## 3. App Content & Compliance (v1.0 with Pro Launch Kit IAP)
 - **Privacy Policy URL:**
   `https://socketrocketdocket.github.io/google-play-app-wizard/privacy.html`
-- **App Access:** All functionality is available without special access (no login required).
-- **Ads:** **No, my app does not contain ads** *(for v1.0; flip to Yes in a future update if you add AdMob)*.
-- **Content Rating (IARC):** Utility / Productivity → answer "No" to violence, sexual content, language, controlled substances, gambling, user-generated content, digital purchases *(for v1.0)* → yields **Everyone / PEGI 3**.
-- **Target Audience:** **13–15, 16–17, 18 and over** *(do NOT select under-13 — this is a developer tool, not directed at children)*.
+- **App Access:** All free functionality is available without login; Pro Launch Kit uses standard Google Play Billing.
+- **Ads:** **No, my app does not contain ads**.
+- **Content Rating (IARC):** Utility / Productivity → answer "No" to violence, sexual content, language, controlled substances, gambling, UGC → answer **Yes** to **Digital purchases** (one-time Pro Launch Kit unlock) → yields **Everyone / PEGI 3**.
+- **Target Audience:** **13–15, 16–17, 18 and over** *(do NOT select under-13)*.
 - **News / Government / Financial / Health apps:** Not applicable (No).
 - **Data Safety:**
-  - Does your app collect or share any of the required user data types? **No** *(for v1.0 — all data stays in on-device localStorage)*.
-- **Advertising ID (`AD_ID`):** No *(not used in v1.0)*.
+  - Does your app collect or share any of the required user data types? **Yes** → under **Financial info**, select **Purchase history** (Collected · App functionality · Optional, handled via Google Play Billing; data encrypted in transit). No other user data is collected or shared.
+- **Advertising ID (`AD_ID`):** No.
+
+---
+
+## 3b. In-App Product Setup (Play Console → Monetize → Products → One-time products)
+Create **1 one-time product** BEFORE submitting or testing purchases:
+- **Product ID (exact!):** `pro_launch_kit`
+- **Name:** `Pro Launch Kit`
+- **Description:** `One-time unlock: Play Store Screenshot Studio, 1024×500 Feature Graphic Generator, Privacy Policy HTML Generator, unlimited app projects, JSON backup & Markdown/PDF export.`
+- **Default price:** `$4.99` (or your preferred price)
+- Click **Activate**!
+- *(Tip: Add your Google email + tester emails under Play Console → Settings → License testing so you can test the purchase flow for free without real charges.)*
 
 ---
 

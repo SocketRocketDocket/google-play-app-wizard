@@ -64,11 +64,12 @@
       <nav class="sidebar-nav" id="sidebarNav"></nav>
 
       <div class="sidebar-footer">
+        <button class="pro-sidebar-btn" id="proBtn" title="Pro Launch Kit">⭐ <span>Unlock Pro Launch Kit</span></button>
         <div class="sidebar-tools">
           <button class="tool-btn" id="quizBtn" title="Personalize checklist">🎯 <span>Personalize</span></button>
           <button class="tool-btn" id="themeToggle" title="Toggle dark mode">🌙 <span>Dark mode</span></button>
-          <button class="tool-btn" id="exportMdBtn" title="Download or share progress as Markdown">⬇️ <span>Markdown</span></button>
-          <button class="tool-btn" id="exportPdfBtn" title="Save progress as PDF">🖨️ <span>PDF</span></button>
+          <button class="tool-btn" id="exportMdBtn" title="Download or share progress as Markdown">⬇️ <span>Markdown</span> <em class="lock-dot" data-pro-lock>⭐</em></button>
+          <button class="tool-btn" id="exportPdfBtn" title="Save progress as PDF">🖨️ <span>PDF</span> <em class="lock-dot" data-pro-lock>⭐</em></button>
         </div>
         <button class="btn-reset" id="resetBtn" title="Reset progress for current app">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
@@ -164,6 +165,37 @@
     </div>
   </div>
 
+  <!-- Pro Launch Kit Modal -->
+  <div class="modal-overlay" id="proModal">
+    <div class="modal modal-wide" role="dialog" aria-labelledby="proModalTitle">
+      <div class="pro-modal-hero">
+        <span class="pro-badge">⭐ ONE-TIME UNLOCK · <strong id="proPriceTag">$4.99</strong></span>
+        <h3 id="proModalTitle">Pro Launch Kit</h3>
+        <p>Pay once, own forever — no subscription. Unlock every visual generator and multi-app workflow tool:</p>
+      </div>
+      <div class="pro-reason" id="proReason" hidden></div>
+      <div class="pro-unlocked-banner" id="proUnlockedBanner" hidden>✓ Pro Launch Kit is unlocked on this device!</div>
+
+      <ul class="pro-feature-list">
+        <li><strong>📸 Play Store Screenshot Studio</strong> — Frame raw captures with headlines, themes &amp; Android bezel and export exact 1080×1920 PNGs.</li>
+        <li><strong>🎨 Feature Graphic Generator</strong> — Create opaque 1024×500 Google Play banners with safe-zone guides in seconds.</li>
+        <li><strong>📜 Privacy Policy &amp; Account-Deletion Generator</strong> — Auto-built from your quiz answers &amp; SDKs, ready to drop onto GitHub Pages.</li>
+        <li><strong>📱 Unlimited App Projects &amp; Exports</strong> — Track multiple apps, back up/restore JSON, and export Markdown &amp; PDF reports.</li>
+      </ul>
+
+      <div class="pro-web-demo" id="proWebDemoBox" hidden>
+        <p>Running in a web browser — Google Play Billing runs inside the Android app, or you can toggle Web Preview below to try every Pro tool right now:</p>
+        <button type="button" class="btn-secondary" id="proWebToggleBtn">✨ Enable Pro Preview (Web Demo)</button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel btn-left" id="proRestoreBtn">Restore Purchases</button>
+        <button type="button" class="btn-cancel" id="proModalClose">Close</button>
+        <button type="button" class="btn-primary" id="proPurchaseBtn">Unlock Pro Launch Kit — $4.99</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Reset Confirmation Modal -->
   <div class="modal-overlay" id="resetModal">
     <div class="modal" role="dialog">
@@ -179,7 +211,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="js/data.js"></script>
+  <script src="js/billing.js"></script>
   <script src="js/tools.js"></script>
+  <script src="js/pro-tools.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
