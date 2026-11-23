@@ -1,9 +1,10 @@
 // Service worker: caches the app shell for offline use.
 // Bump CACHE_VERSION whenever you change any cached file.
-const CACHE_VERSION = 'play-wizard-v4';
+const CACHE_VERSION = 'play-wizard-v5';
 const ASSETS = [
   './',
   './index.html',
+  './privacy.html',
   './css/styles.css',
   './js/data.js',
   './js/tools.js',

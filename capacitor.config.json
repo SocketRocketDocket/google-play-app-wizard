@@ -1,5 +1,5 @@
 {
-  "appId": "com.playwizard.app",
+  "appId": "io.github.socketrocketdocket.playwizard",
   "appName": "Play Wizard",
   "webDir": "www",
   "android": {

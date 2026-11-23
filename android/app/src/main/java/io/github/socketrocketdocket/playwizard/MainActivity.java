@@ -1,4 +1,4 @@
-package com.playwizard.app;
+package io.github.socketrocketdocket.playwizard;
 
 import com.getcapacitor.BridgeActivity;
 
