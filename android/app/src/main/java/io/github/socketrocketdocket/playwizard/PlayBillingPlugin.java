@@ -76,7 +76,8 @@ public class PlayBillingPlugin extends Plugin {
                 .setProductList(Collections.singletonList(product))
                 .build();
 
-            billingClient.queryProductDetailsAsync(params, (result, list) -> {
+            billingClient.queryProductDetailsAsync(params, (result, queryResult) -> {
+                List<ProductDetails> list = queryResult != null ? queryResult.getProductDetailsList() : null;
                 if (result.getResponseCode() != BillingClient.BillingResponseCode.OK || list == null || list.isEmpty()) {
                     call.reject("Product not found in Play Console yet: " + productId);
                     return;
@@ -106,7 +107,8 @@ public class PlayBillingPlugin extends Plugin {
                 .setProductList(Collections.singletonList(product))
                 .build();
 
-            billingClient.queryProductDetailsAsync(params, (result, list) -> {
+            billingClient.queryProductDetailsAsync(params, (result, queryResult) -> {
+                List<ProductDetails> list = queryResult != null ? queryResult.getProductDetailsList() : null;
                 if (result.getResponseCode() != BillingClient.BillingResponseCode.OK || list == null || list.isEmpty()) {
                     JSObject ret = new JSObject();
                     ret.put("unlocked", false);
