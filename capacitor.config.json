@@ -1,0 +1,9 @@
+{
+  "appId": "com.playwizard.app",
+  "appName": "Play Wizard",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#202124",
+    "adjustMarginsForEdgeToEdge": "auto"
+  }
+}

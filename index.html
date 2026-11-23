@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Google Play App Wizard</title>
+  <meta name="description" content="A step-by-step, personalized guide and launch workbench for publishing Android apps on Google Play.">
+  <meta name="theme-color" content="#202124">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    try {
+      var s = JSON.parse(localStorage.getItem('gplay-wizard-state') || '{}');
+      var t = s.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <div id="app">
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <h1 class="mobile-title">Play Publish Wizard</h1>
+      <div class="mobile-progress" id="mobileProgress">0%</div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+            <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 8.99l-2.3 2.302-8.636-8.634z" fill="currentColor"/>
+          </svg>
+          <div>
+            <h1 class="logo-title">Play Publish</h1>
+            <p class="logo-subtitle">App Wizard</p>
+          </div>
+        </div>
+
+        <!-- Multi-app project switcher -->
+        <div class="project-switcher">
+          <select id="projectSelect" class="project-select" aria-label="Active app project"></select>
+          <button type="button" class="project-manage-btn" id="manageProjectsBtn" title="Manage apps & backups">⚙️</button>
+        </div>
+
+        <div class="overall-progress">
+          <div class="progress-bar"><div class="progress-fill" id="overallProgressFill"></div></div>
+          <span class="progress-text" id="overallProgressText">0% Complete</span>
+        </div>
+
+        <!-- Global quick search -->
+        <div class="sidebar-search">
+          <input type="search" id="searchInput" class="search-input" placeholder="Search steps, tips, notes… (Ctrl+K)" autocomplete="off">
+          <button type="button" id="searchClear" class="search-clear" aria-label="Clear search" hidden>✕</button>
+          <div id="searchResults" class="search-results" hidden></div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav"></nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-tools">
+          <button class="tool-btn" id="quizBtn" title="Personalize checklist">🎯 <span>Personalize</span></button>
+          <button class="tool-btn" id="themeToggle" title="Toggle dark mode">🌙 <span>Dark mode</span></button>
+          <button class="tool-btn" id="exportMdBtn" title="Download or share progress as Markdown">⬇️ <span>Markdown</span></button>
+          <button class="tool-btn" id="exportPdfBtn" title="Save progress as PDF">🖨️ <span>PDF</span></button>
+        </div>
+        <button class="btn-reset" id="resetBtn" title="Reset progress for current app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+            <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+          </svg>
+          Reset Current App
+        </button>
+        <div class="sidebar-links">
+          <a href="https://play.google.com/console" target="_blank" rel="noopener">Play Console ↗</a>
+          <a href="https://developer.android.com/distribute" target="_blank" rel="noopener">Docs ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="content" id="content">
+      <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-hero">
+          <div class="welcome-icon">🚀</div>
+          <h1>Welcome to Google Play<br>App Publish Wizard</h1>
+          <p class="welcome-subtitle">Your step-by-step guide and launch workbench for publishing Android apps on the Google Play Store. Personalize the checklist, draft your listing, validate graphics, and track your 14-day closed test.</p>
+        </div>
+
+        <div class="profile-card" id="profileCard"></div>
+        <div class="tools-banner" id="toolsBanner"></div>
+
+        <div class="welcome-features">
+          <div class="feature-card"><div class="feature-icon">📋</div><h3>Guided Checklists</h3><p>Every step has a detailed checklist, tips, and links to official Play docs.</p></div>
+          <div class="feature-card"><div class="feature-icon">🖼️</div><h3>Asset Validator</h3><p>Drop icons, feature graphics, or screenshots to verify dimensions & limits.</p></div>
+          <div class="feature-card"><div class="feature-icon">⏱️</div><h3>14-Day Test Tracker</h3><p>Track your 12+ opted-in testers and countdown to production eligibility.</p></div>
+          <div class="feature-card"><div class="feature-icon">💾</div><h3>Multi-App & Offline</h3><p>Manage multiple apps, back up to JSON, export Markdown/PDF, work offline.</p></div>
+        </div>
+
+        <button class="btn-start" id="startBtn">Get Started →</button>
+
+        <div class="welcome-sections" id="welcomeSections"></div>
+      </div>
+
+      <div class="section-view" id="sectionView" style="display:none;">
+        <div class="section-header" id="sectionHeader"></div>
+        <div class="steps-container" id="stepsContainer"></div>
+        <div class="section-nav-buttons" id="sectionNavButtons"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Printable report -->
+  <div id="printReport" class="print-report"></div>
+
+  <!-- Projects & Backup Modal -->
+  <div class="modal-overlay" id="projectModal">
+    <div class="modal modal-wide" role="dialog" aria-labelledby="projectModalTitle">
+      <h3 id="projectModalTitle">📱 Apps & Backup</h3>
+      <p>Track separate publishing checklists for each of your Android apps, or back up and restore your progress across devices.</p>
+
+      <div class="project-create-row">
+        <input type="text" id="newProjectName" class="tool-input" placeholder="New app name (e.g. Habit Tracker)">
+        <button type="button" class="btn-primary" id="createProjectBtn">+ Add App</button>
+      </div>
+
+      <div class="project-list" id="projectList"></div>
+
+      <div class="backup-section">
+        <div class="backup-title">Backup & Restore (JSON)</div>
+        <div class="backup-actions">
+          <button type="button" class="btn-secondary" id="exportJsonBtn">⬇️ Export Backup</button>
+          <button type="button" class="btn-secondary" id="importJsonBtn">⬆️ Import Backup</button>
+          <input type="file" id="importJsonInput" accept="application/json,.json" hidden>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-primary" id="projectModalClose">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Modal -->
+  <div class="modal-overlay" id="quizModal">
+    <div class="modal modal-wide" role="dialog" aria-labelledby="quizTitle">
+      <h3 id="quizTitle">🎯 Personalize Your Checklist</h3>
+      <p>Tell us about your app. We'll hide steps that don't apply and add advice specific to your situation.</p>
+      <div class="quiz-body" id="quizBody"></div>
+      <div class="quiz-error" id="quizError"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel btn-left" id="quizClear">Clear personalization</button>
+        <button class="btn-cancel" id="quizCancel">Cancel</button>
+        <button class="btn-primary" id="quizSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Confirmation Modal -->
+  <div class="modal-overlay" id="resetModal">
+    <div class="modal" role="dialog">
+      <h3>Reset "<span id="resetTargetName">this app</span>"?</h3>
+      <p>This unchecks every item and clears notes, quiz answers, and drafts for the active app only. Tip: export a JSON backup first.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="resetCancel">Cancel</button>
+        <button class="btn-danger" id="resetConfirm">Reset App</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
